@@ -1,23 +1,17 @@
 # Can use latest-tls or a specific version's tag, also
 FROM ghcr.io/taliamax/httpget:latest as httpget
 
-FROM rust:1.70.0-alpine as build
+FROM rust:1.70.0 as build
 
-RUN rustup target add $(arch)-unknown-linux-musl
+RUN rustup target add $(arch)-unknown-linux-musl && \
+    apt-get update && \
+    apt-get install -y musl-tools
 
 WORKDIR /app
 
-COPY Cargo.toml Cargo.lock ./
+COPY . .
 
-# Create a fake binary target to be used for dependency caching locally, then clean it
-RUN mkdir src && echo "fn main() {}" > src/main.rs \
-    && cargo build \
-    && rm src/main.rs
-
-COPY src ./src
-
-RUN touch -am src/main.rs \
-    && mkdir ./bin
+RUN mkdir ./bin
 
 # Use a statically linked target for the prod
 RUN cargo build --release --target $(arch)-unknown-linux-musl \
