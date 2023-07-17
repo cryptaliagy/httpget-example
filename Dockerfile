@@ -1,5 +1,5 @@
 # Can use latest-tls or a specific version's tag, also
-FROM ghcr.io/taliamax/httpget:latest as httpget
+FROM ghcr.io/cryptaliagy/httpget:latest as httpget
 
 FROM rust:1.70.0 as build
 
